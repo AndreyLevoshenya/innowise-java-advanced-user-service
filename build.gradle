@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version libs.versions.springboot
+}
+
+group = 'com.inno'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation libs.springboot.starter
+    implementation libs.springboot.starter.jpa
+    implementation libs.springboot.starter.validation
+    implementation libs.springboot.starter.test
+
+    implementation libs.mapstruct
+    implementation libs.mapstruct.annotation.processor
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,13 @@
+[versions]
+springboot = "3.4.5"
+mapstruct="1.6.3"
+
+[libraries]
+
+springboot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "springboot"}
+springboot-starter-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "springboot"}
+springboot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "springboot"}
+springboot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springboot"}
+
+mapstruct = { module = 'org.mapstruct:mapstruct', version.ref = "mapstruct" }
+mapstruct-annotation-processor = { module = 'org.mapstruct:mapstruct-processor', version.ref = "mapstruct"}
