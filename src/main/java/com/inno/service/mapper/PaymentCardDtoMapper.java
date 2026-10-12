@@ -8,9 +8,7 @@ import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.springframework.stereotype.Component;
 
-@Component
 @Mapper(componentModel = "spring")
 public interface PaymentCardDtoMapper {
     PaymentCardDtoResponse modelToDto(PaymentCard model);
