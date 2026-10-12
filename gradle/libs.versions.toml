@@ -1,6 +1,7 @@
 [versions]
-springboot = "3.4.5"
-mapstruct="1.6.3"
+springboot = "4.1.1"
+mapstruct = "1.6.3"
+postgresql = "42.7.2"
 
 [libraries]
 
@@ -8,6 +9,9 @@ springboot-starter = { module = "org.springframework.boot:spring-boot-starter", 
 springboot-starter-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "springboot"}
 springboot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "springboot"}
 springboot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springboot"}
+springboot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "springboot"}
+springboot-starter-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase", version.ref = "springboot"}
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql"}
 
 mapstruct = { module = 'org.mapstruct:mapstruct', version.ref = "mapstruct" }
 mapstruct-annotation-processor = { module = 'org.mapstruct:mapstruct-processor', version.ref = "mapstruct"}

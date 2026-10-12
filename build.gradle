@@ -14,11 +14,16 @@ repositories {
 dependencies {
     implementation libs.springboot.starter
     implementation libs.springboot.starter.jpa
+    implementation libs.springboot.starter.liquibase
     implementation libs.springboot.starter.validation
-    implementation libs.springboot.starter.test
-
+    implementation libs.springboot.starter.web
     implementation libs.mapstruct
-    implementation libs.mapstruct.annotation.processor
+
+    runtimeOnly libs.postgresql
+
+    annotationProcessor libs.mapstruct.annotation.processor
+
+    testImplementation libs.springboot.starter.test
 }
 
 test {
