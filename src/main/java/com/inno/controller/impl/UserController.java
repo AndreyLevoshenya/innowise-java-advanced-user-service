@@ -7,6 +7,7 @@ import com.inno.service.dto.PaymentCardDtoResponse;
 import com.inno.service.dto.SearchingRequest;
 import com.inno.service.dto.UserDtoRequest;
 import com.inno.service.dto.UserDtoResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -69,7 +70,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
     @Override
     @PostMapping
     @ResponseStatus(CREATED)
-    public ResponseEntity<UserDtoResponse> create(@RequestBody UserDtoRequest createRequest) {
+    public ResponseEntity<UserDtoResponse> create(@Valid @RequestBody UserDtoRequest createRequest) {
         UserDtoResponse userDtoResponse = userService.create(createRequest);
         return new ResponseEntity<>(userDtoResponse, CREATED);
     }
@@ -77,7 +78,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
     @Override
     @PutMapping(value = "/{id}")
     @ResponseStatus(OK)
-    public ResponseEntity<UserDtoResponse> update(@PathVariable Long id, @RequestBody UserDtoRequest updateRequest) {
+    public ResponseEntity<UserDtoResponse> update(@PathVariable Long id, @Valid @RequestBody UserDtoRequest updateRequest) {
         UserDtoResponse userDtoResponse = userService.update(id, updateRequest);
         return new ResponseEntity<>(userDtoResponse, OK);
     }
