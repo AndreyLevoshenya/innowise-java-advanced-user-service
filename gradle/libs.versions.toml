@@ -11,6 +11,8 @@ springboot-starter-validation = { module = "org.springframework.boot:spring-boot
 springboot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springboot"}
 springboot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "springboot"}
 springboot-starter-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase", version.ref = "springboot"}
+springboot-starter-cache = { module = "org.springframework.boot:spring-boot-starter-cache", version.ref = "springboot"}
+springboot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis", version.ref = "springboot"}
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql"}
 
 mapstruct = { module = 'org.mapstruct:mapstruct', version.ref = "mapstruct" }
