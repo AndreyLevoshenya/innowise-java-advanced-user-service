@@ -5,6 +5,7 @@ import com.inno.service.PaymentCardService;
 import com.inno.service.dto.PaymentCardDtoRequest;
 import com.inno.service.dto.PaymentCardDtoResponse;
 import com.inno.service.dto.SearchingRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +45,7 @@ public class PaymentCardController implements BaseController<PaymentCardDtoReque
     @ResponseStatus(OK)
     public ResponseEntity<Page<PaymentCardDtoResponse>> findAll(
             @RequestParam(name = "search", required = false) String search,
-            @PageableDefault(sort = "surname", direction = Sort.Direction.ASC) Pageable pageable) {
+            @PageableDefault(sort = "number", direction = Sort.Direction.ASC) Pageable pageable) {
         SearchingRequest searchingRequest = null;
         if (search != null && !search.isBlank()) {
             searchingRequest = new SearchingRequest(search);
@@ -64,7 +65,7 @@ public class PaymentCardController implements BaseController<PaymentCardDtoReque
     @Override
     @PostMapping
     @ResponseStatus(CREATED)
-    public ResponseEntity<PaymentCardDtoResponse> create(@RequestBody PaymentCardDtoRequest createRequest) {
+    public ResponseEntity<PaymentCardDtoResponse> create(@Valid @RequestBody PaymentCardDtoRequest createRequest) {
         PaymentCardDtoResponse paymentCardDtoResponse = paymentCardService.create(createRequest);
         return new ResponseEntity<>(paymentCardDtoResponse, CREATED);
     }
@@ -72,7 +73,7 @@ public class PaymentCardController implements BaseController<PaymentCardDtoReque
     @Override
     @PutMapping(value = "/{id}")
     @ResponseStatus(OK)
-    public ResponseEntity<PaymentCardDtoResponse> update(@PathVariable Long id, @RequestBody PaymentCardDtoRequest updateRequest) {
+    public ResponseEntity<PaymentCardDtoResponse> update(@PathVariable Long id, @Valid @RequestBody PaymentCardDtoRequest updateRequest) {
         PaymentCardDtoResponse paymentCardDtoResponse = paymentCardService.update(id, updateRequest);
         return new ResponseEntity<>(paymentCardDtoResponse, OK);
     }
