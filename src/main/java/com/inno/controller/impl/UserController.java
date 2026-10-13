@@ -3,7 +3,7 @@ package com.inno.controller.impl;
 import com.inno.controller.BaseController;
 import com.inno.service.PaymentCardService;
 import com.inno.service.UserService;
-import com.inno.service.dto.PaymentCardDtoResponse;
+import com.inno.service.dto.PaymentCardDtoResponseWithUser;
 import com.inno.service.dto.SearchingRequest;
 import com.inno.service.dto.UserDtoRequest;
 import com.inno.service.dto.UserDtoResponse;
@@ -104,8 +104,8 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
 
     @GetMapping(value = "/{id}/payment-cards")
     @ResponseStatus(OK)
-    public ResponseEntity<List<PaymentCardDtoResponse>> readPaymentCardsByUserId(@PathVariable Long id) {
-        List<PaymentCardDtoResponse> tagDtoResponseList = paymentCardService.findAllByUserId(id);
+    public ResponseEntity<List<PaymentCardDtoResponseWithUser>> readPaymentCardsByUserId(@PathVariable Long id) {
+        List<PaymentCardDtoResponseWithUser> tagDtoResponseList = paymentCardService.findAllByUserId(id);
         return new ResponseEntity<>(tagDtoResponseList, OK);
     }
 }

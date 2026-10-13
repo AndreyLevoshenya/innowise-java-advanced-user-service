@@ -7,7 +7,7 @@ import com.inno.repository.model.PaymentCard;
 import com.inno.repository.model.User;
 import com.inno.service.PaymentCardService;
 import com.inno.service.dto.PaymentCardDtoRequest;
-import com.inno.service.dto.PaymentCardDtoResponse;
+import com.inno.service.dto.PaymentCardDtoResponseWithUser;
 import com.inno.service.dto.SearchingRequest;
 import com.inno.service.exception.NotFoundException;
 import com.inno.service.exception.TooManyPaymentCardsException;
@@ -45,32 +45,32 @@ public class PaymentCardServiceImpl implements PaymentCardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PaymentCardDtoResponse> findAll(SearchingRequest searchingRequest, Pageable pageable) {
+    public Page<PaymentCardDtoResponseWithUser> findAll(SearchingRequest searchingRequest, Pageable pageable) {
         if (searchingRequest == null) {
             LOGGER.info("Reading all payment cards");
-            return paymentCardRepository.findAll(pageable).map(paymentCardDtoMapper::modelToDto);
+            return paymentCardRepository.findAll(pageable).map(paymentCardDtoMapper::modelToDtoWithUser);
         }
         LOGGER.info("Reading all payment cards for {}", searchingRequest.getValue());
 
         Specification<PaymentCard> specification = EntitySpecification.searchByFields(fieldsToSearch, searchingRequest.getValue());
-        return paymentCardRepository.findAll(specification, pageable).map(paymentCardDtoMapper::modelToDto);
+        return paymentCardRepository.findAll(specification, pageable).map(paymentCardDtoMapper::modelToDtoWithUser);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PaymentCardDtoResponse findById(Long id) {
+    public PaymentCardDtoResponseWithUser findById(Long id) {
         LOGGER.info("Reading payment card by id {}", id);
         PaymentCard paymentCard = paymentCardRepository.findById(id)
                 .orElseThrow(() -> {
                     LOGGER.warn("Payment card with id {} not found", id);
                     return new NotFoundException(String.format(PAYMENT_CARD_DOES_NOT_EXIST.getErrorMessage(), id));
                 });
-        return paymentCardDtoMapper.modelToDto(paymentCard);
+        return paymentCardDtoMapper.modelToDtoWithUser(paymentCard);
     }
 
     @Override
     @Transactional
-    public PaymentCardDtoResponse create(PaymentCardDtoRequest createRequest) {
+    public PaymentCardDtoResponseWithUser create(PaymentCardDtoRequest createRequest) {
         LOGGER.info("Creating payment card {}", createRequest.toString());
 
         User user = userRepository.findById(createRequest.getUserId()).orElseThrow(() -> {
@@ -85,12 +85,12 @@ public class PaymentCardServiceImpl implements PaymentCardService {
 
         PaymentCard model = paymentCardDtoMapper.dtoToModel(createRequest, userRepository);
         PaymentCard paymentCard = paymentCardRepository.save(model);
-        return paymentCardDtoMapper.modelToDto(paymentCard);
+        return paymentCardDtoMapper.modelToDtoWithUser(paymentCard);
     }
 
     @Override
     @Transactional
-    public PaymentCardDtoResponse update(Long id, PaymentCardDtoRequest updateRequest) {
+    public PaymentCardDtoResponseWithUser update(Long id, PaymentCardDtoRequest updateRequest) {
         LOGGER.info("Updating payment card with id {}", id);
 
         PaymentCard paymentCard = paymentCardRepository.findById(id)
@@ -109,7 +109,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
         paymentCard.setHolder(updateRequest.getHolder());
         paymentCard.setExpirationDate(updateRequest.getExpirationDate());
         paymentCard.setActive(updateRequest.isActive());
-        return paymentCardDtoMapper.modelToDto(paymentCardRepository.save(paymentCard));
+        return paymentCardDtoMapper.modelToDtoWithUser(paymentCardRepository.save(paymentCard));
     }
 
     @Override
@@ -137,12 +137,12 @@ public class PaymentCardServiceImpl implements PaymentCardService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaymentCardDtoResponse> findAllByUserId(Long userId) {
+    public List<PaymentCardDtoResponseWithUser> findAllByUserId(Long userId) {
         LOGGER.info("Reading payment cards by user id {}", userId);
         if (!userRepository.existsById(userId)) {
             LOGGER.error("User with id {} not found. Unable to read payment cards", userId);
             throw new NotFoundException(String.format(USER_DOES_NOT_EXIST.getErrorMessage(), userId));
         }
-        return paymentCardRepository.findAllByUserId(userId).stream().map(paymentCardDtoMapper::modelToDto).toList();
+        return paymentCardRepository.findAllByUserId(userId).stream().map(paymentCardDtoMapper::modelToDtoWithUser).toList();
     }
 }

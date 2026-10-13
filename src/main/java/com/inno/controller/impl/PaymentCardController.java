@@ -3,7 +3,7 @@ package com.inno.controller.impl;
 import com.inno.controller.BaseController;
 import com.inno.service.PaymentCardService;
 import com.inno.service.dto.PaymentCardDtoRequest;
-import com.inno.service.dto.PaymentCardDtoResponse;
+import com.inno.service.dto.PaymentCardDtoResponseWithUser;
 import com.inno.service.dto.SearchingRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping(value = PAYMENT_CARDS_V1_API_PATH)
-public class PaymentCardController implements BaseController<PaymentCardDtoRequest, PaymentCardDtoResponse, Long> {
+public class PaymentCardController implements BaseController<PaymentCardDtoRequest, PaymentCardDtoResponseWithUser, Long> {
     private final PaymentCardService paymentCardService;
 
     @Autowired
@@ -43,38 +43,38 @@ public class PaymentCardController implements BaseController<PaymentCardDtoReque
     @Override
     @GetMapping
     @ResponseStatus(OK)
-    public ResponseEntity<Page<PaymentCardDtoResponse>> findAll(
+    public ResponseEntity<Page<PaymentCardDtoResponseWithUser>> findAll(
             @RequestParam(name = "search", required = false) String search,
             @PageableDefault(sort = "number", direction = Sort.Direction.ASC) Pageable pageable) {
         SearchingRequest searchingRequest = null;
         if (search != null && !search.isBlank()) {
             searchingRequest = new SearchingRequest(search);
         }
-        Page<PaymentCardDtoResponse> pageDtoResponse = paymentCardService.findAll(searchingRequest, pageable);
+        Page<PaymentCardDtoResponseWithUser> pageDtoResponse = paymentCardService.findAll(searchingRequest, pageable);
         return new ResponseEntity<>(pageDtoResponse, OK);
     }
 
     @Override
     @GetMapping(value = "/{id}")
     @ResponseStatus(OK)
-    public ResponseEntity<PaymentCardDtoResponse> findById(@PathVariable Long id) {
-        PaymentCardDtoResponse paymentCardDtoResponse = paymentCardService.findById(id);
+    public ResponseEntity<PaymentCardDtoResponseWithUser> findById(@PathVariable Long id) {
+        PaymentCardDtoResponseWithUser paymentCardDtoResponse = paymentCardService.findById(id);
         return new ResponseEntity<>(paymentCardDtoResponse, OK);
     }
 
     @Override
     @PostMapping
     @ResponseStatus(CREATED)
-    public ResponseEntity<PaymentCardDtoResponse> create(@Valid @RequestBody PaymentCardDtoRequest createRequest) {
-        PaymentCardDtoResponse paymentCardDtoResponse = paymentCardService.create(createRequest);
+    public ResponseEntity<PaymentCardDtoResponseWithUser> create(@Valid @RequestBody PaymentCardDtoRequest createRequest) {
+        PaymentCardDtoResponseWithUser paymentCardDtoResponse = paymentCardService.create(createRequest);
         return new ResponseEntity<>(paymentCardDtoResponse, CREATED);
     }
 
     @Override
     @PutMapping(value = "/{id}")
     @ResponseStatus(OK)
-    public ResponseEntity<PaymentCardDtoResponse> update(@PathVariable Long id, @Valid @RequestBody PaymentCardDtoRequest updateRequest) {
-        PaymentCardDtoResponse paymentCardDtoResponse = paymentCardService.update(id, updateRequest);
+    public ResponseEntity<PaymentCardDtoResponseWithUser> update(@PathVariable Long id, @Valid @RequestBody PaymentCardDtoRequest updateRequest) {
+        PaymentCardDtoResponseWithUser paymentCardDtoResponse = paymentCardService.update(id, updateRequest);
         return new ResponseEntity<>(paymentCardDtoResponse, OK);
     }
 
