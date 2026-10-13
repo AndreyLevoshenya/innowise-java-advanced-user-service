@@ -12,6 +12,8 @@ import com.inno.service.mapper.UserDtoMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -51,6 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "users", key = "#id")
     public UserDtoResponse findById(Long id) {
         LOGGER.info("Reading user by id {}", id);
         User user = userRepository.findById(id)
@@ -73,6 +76,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", key = "#id")
     public UserDtoResponse update(Long id, UserDtoRequest updateRequest) {
         LOGGER.info("Updating user with id {}", id);
 
@@ -92,6 +96,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", key = "#id")
     public void deleteById(Long id) {
         LOGGER.info("Deleting user by id {}", id);
         if (!userRepository.existsById(id)) {
@@ -103,6 +108,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", key = "#id")
     public int updateActiveStatus(Long id, boolean active) {
         LOGGER.info("Updating active status for user with id {}", id);
 
