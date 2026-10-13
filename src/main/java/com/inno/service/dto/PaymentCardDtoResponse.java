@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 
 public class PaymentCardDtoResponse {
     private Long id;
-    private UserDtoResponse user;
     private String number;
     private String holder;
     private LocalDate expirationDate;
@@ -13,9 +12,8 @@ public class PaymentCardDtoResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public PaymentCardDtoResponse(Long id, UserDtoResponse user, String number, String holder, LocalDate expirationDate, Boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public PaymentCardDtoResponse(Long id, String number, String holder, LocalDate expirationDate, Boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.user = user;
         this.number = number;
         this.holder = holder;
         this.expirationDate = expirationDate;
@@ -33,14 +31,6 @@ public class PaymentCardDtoResponse {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public UserDtoResponse getUser() {
-        return user;
-    }
-
-    public void setUser(UserDtoResponse user) {
-        this.user = user;
     }
 
     public String getNumber() {
