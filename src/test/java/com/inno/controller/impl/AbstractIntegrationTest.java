@@ -12,17 +12,18 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @ActiveProfiles("test")
 @Import(TestCacheConfig.class)
-@Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class AbstractIntegrationTest {
 
-    @Container
     static final PostgreSQLContainer<?> POSTGRES =
             new PostgreSQLContainer<>("postgres:17-alpine")
                     .withDatabaseName("users_test")
                     .withUsername("test")
                     .withPassword("test");
 
+    static {
+        POSTGRES.start();
+    }
 
     @DynamicPropertySource
     static void configureDatabase(DynamicPropertyRegistry registry) {
@@ -33,6 +34,5 @@ public abstract class AbstractIntegrationTest {
                 "spring.datasource.driver-class-name",
                 POSTGRES::getDriverClassName
         );
-        registry.add("spring.liquibase.enabled", () -> true);
     }
 }
