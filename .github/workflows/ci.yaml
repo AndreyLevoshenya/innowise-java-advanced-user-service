@@ -39,8 +39,14 @@ jobs:
       - name: Build application
         run: ./gradlew assemble --no-daemon
 
+      - name: Check Docker
+        run: |
+          docker version
+          docker info
+          docker ps
+
       - name: Run tests
-        run: ./gradlew test jacocoTestReport --no-daemon
+        run: ./gradlew test jacocoTestReport --no-daemon --stacktrace --info
 
       - name: Upload test results
         if: always()
