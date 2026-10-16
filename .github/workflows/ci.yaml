@@ -46,7 +46,7 @@ jobs:
           docker ps
 
       - name: Run tests
-        run: ./gradlew test jacocoTestReport --no-daemon --stacktrace --info
+        run: ./gradlew test jacocoTestReport --no-daemon
 
       - name: Upload test results
         if: always()
@@ -59,7 +59,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: SonarQube analysis
+      - name: SonarQube analysis and Quality Gate
         if: success()
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -70,7 +70,9 @@ jobs:
             -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
             -Dsonar.organization="$SONAR_ORGANIZATION" \
             -Dsonar.host.url="https://sonarcloud.io" \
-            -Dsonar.token="$SONAR_TOKEN"
+            -Dsonar.token="$SONAR_TOKEN" \
+            -Dsonar.qualitygate.wait=true \
+            -Dsonar.qualitygate.timeout=300
 
       - name: Build Docker image with Compose
         if: success()
