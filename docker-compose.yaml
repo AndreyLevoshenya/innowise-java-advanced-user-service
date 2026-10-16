@@ -32,6 +32,7 @@ services:
     restart: unless-stopped
 
   user-service:
+    image: user-service:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: Dockerfile
@@ -43,10 +44,10 @@ services:
       SPRING_DATASOURCE_USERNAME: ${USER_SERVICE_DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${USER_SERVICE_DB_PASSWORD:?Set USER_SERVICE_DB_PASSWORD in .env}
       SPRING_DATA_REDIS_HOST: redis
-      SPRING_DATA_REDIS_PORT: ${USER_SERVICE_REDIS_PORT}
+      SPRING_DATA_REDIS_PORT: ${USER_SERVICE_REDIS_PORT:-6379}
       SPRING_DATA_REDIS_PASSWORD: ${USER_SERVICE_REDIS_PASSWORD}
     ports:
-      - "${APP_PORT:-8080}:8080"
+      - "${USER_SERVICE_PORT:-8080}:8080"
     depends_on:
       postgres:
         condition: service_healthy
