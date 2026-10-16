@@ -2,6 +2,9 @@
 springboot = "4.1.1"
 mapstruct = "1.6.3"
 postgresql = "42.7.2"
+testcontainers = "1.21.3"
+restassured = "6.0.0"
+jackson = "2.22.3"
 
 [libraries]
 
@@ -17,3 +20,8 @@ postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql"}
 
 mapstruct = { module = 'org.mapstruct:mapstruct', version.ref = "mapstruct" }
 mapstruct-annotation-processor = { module = 'org.mapstruct:mapstruct-processor', version.ref = "mapstruct"}
+
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers"}
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers"}
+restassured = { module = "io.rest-assured:rest-assured", version.ref = "restassured"}
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson"}

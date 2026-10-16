@@ -27,6 +27,11 @@ dependencies {
     annotationProcessor libs.mapstruct.annotation.processor
 
     testImplementation libs.springboot.starter.test
+
+    testImplementation libs.testcontainers.junit.jupiter
+    testImplementation libs.testcontainers.postgresql
+    testImplementation libs.restassured
+    testImplementation libs.jackson.databind
 }
 
 test {
