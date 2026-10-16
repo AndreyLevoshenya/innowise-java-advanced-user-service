@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version libs.versions.springboot
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.sonarqube' version '6.2.0.5505'
+    id 'jacoco'
 }
 
 group = 'com.inno'
@@ -27,8 +29,40 @@ dependencies {
     annotationProcessor libs.mapstruct.annotation.processor
 
     testImplementation libs.springboot.starter.test
+
+    testImplementation libs.testcontainers.junit.jupiter
+    testImplementation libs.testcontainers.postgresql
+    testImplementation libs.restassured
+    testImplementation libs.jackson.databind
 }
 
-test {
+tasks.named('bootJar') {
+    archiveFileName = 'user-service.jar'
+}
+
+tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy tasks.named('jacocoTestReport')
+}
+
+jacocoTestReport {
+    dependsOn tasks.named('test')
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+sonar {
+    properties {
+        property 'sonar.projectKey', 'YOUR_PROJECT_KEY'
+        property 'sonar.organization', 'YOUR_ORGANIZATION'
+        property 'sonar.host.url', 'https://sonarcloud.io'
+
+        property 'sonar.coverage.jacoco.xmlReportPaths',
+                'build/reports/jacoco/test/jacocoTestReport.xml'
+
+        property 'sonar.java.binaries', 'build/classes'
+    }
 }
