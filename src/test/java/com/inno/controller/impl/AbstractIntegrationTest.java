@@ -18,7 +18,7 @@ public abstract class AbstractIntegrationTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES =
-            new PostgreSQLContainer<>("postgres:16-alpine")
+            new PostgreSQLContainer<>("postgres:17-alpine")
                     .withDatabaseName("users_test")
                     .withUsername("test")
                     .withPassword("test");
