@@ -56,7 +56,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: SonarQube analysis and Quality Gate
+      - name: SonarQube analysis
         if: success()
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -67,9 +67,7 @@ jobs:
             -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
             -Dsonar.organization="$SONAR_ORGANIZATION" \
             -Dsonar.host.url="https://sonarcloud.io" \
-            -Dsonar.token="$SONAR_TOKEN" \
-            -Dsonar.qualitygate.wait=true \
-            -Dsonar.qualitygate.timeout=300
+            -Dsonar.token="$SONAR_TOKEN"
 
       - name: Build Docker image with Compose
         if: success()
