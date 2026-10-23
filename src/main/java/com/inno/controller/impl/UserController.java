@@ -14,6 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,15 +26,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 import static com.inno.controller.RestConstants.USERS_V1_API_PATH;
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping(value = USERS_V1_API_PATH)
@@ -47,7 +47,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
 
     @Override
     @GetMapping
-    @ResponseStatus(OK)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Page<UserDtoResponse>> findAll(
             @RequestParam(name = "search", required = false) String search,
             @PageableDefault(sort = "surname", direction = Sort.Direction.ASC) Pageable pageable) {
@@ -56,36 +56,47 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
             searchingRequest = new SearchingRequest(search);
         }
         Page<UserDtoResponse> pageDtoResponse = userService.findAll(searchingRequest, pageable);
-        return new ResponseEntity<>(pageDtoResponse, OK);
+        return ResponseEntity.ok(pageDtoResponse);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    public ResponseEntity<UserDtoResponse> getCurrentUser(
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        Long userId = jwt.getClaim("userId");
+
+        UserDtoResponse userDtoResponse = userService.findById(userId);
+        return ResponseEntity.ok(userDtoResponse);
     }
 
     @Override
     @GetMapping(value = "/{id}")
-    @ResponseStatus(OK)
+    @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.token.claims['userId']")
     public ResponseEntity<UserDtoResponse> findById(@PathVariable Long id) {
         UserDtoResponse userDtoResponse = userService.findById(id);
-        return new ResponseEntity<>(userDtoResponse, OK);
+        return ResponseEntity.ok(userDtoResponse);
     }
 
     @Override
     @PostMapping
-    @ResponseStatus(CREATED)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SERVICE')")
     public ResponseEntity<UserDtoResponse> create(@Valid @RequestBody UserDtoRequest createRequest) {
         UserDtoResponse userDtoResponse = userService.create(createRequest);
-        return new ResponseEntity<>(userDtoResponse, CREATED);
+        return ResponseEntity.status(CREATED).body(userDtoResponse);
     }
 
     @Override
     @PutMapping(value = "/{id}")
-    @ResponseStatus(OK)
+    @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.token.claims['userId']")
     public ResponseEntity<UserDtoResponse> update(@PathVariable Long id, @Valid @RequestBody UserDtoRequest updateRequest) {
         UserDtoResponse userDtoResponse = userService.update(id, updateRequest);
-        return new ResponseEntity<>(userDtoResponse, OK);
+        return ResponseEntity.ok(userDtoResponse);
     }
 
     @Override
     @DeleteMapping(value = "/{id}")
-    @ResponseStatus(NO_CONTENT)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
@@ -93,7 +104,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
 
     @Override
     @PatchMapping("/{id}/status")
-    @ResponseStatus(NO_CONTENT)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> updateActiveStatus(
             @PathVariable Long id,
             @RequestParam boolean active) {
@@ -102,10 +113,19 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(value = "/{id}/payment-cards")
-    @ResponseStatus(OK)
+    @GetMapping(value = "/{id}/cards")
+    @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.token.claims['userId']")
     public ResponseEntity<List<PaymentCardDtoResponseWithUser>> readPaymentCardsByUserId(@PathVariable Long id) {
         List<PaymentCardDtoResponseWithUser> tagDtoResponseList = paymentCardService.findAllByUserId(id);
-        return new ResponseEntity<>(tagDtoResponseList, OK);
+        return ResponseEntity.ok(tagDtoResponseList);
+    }
+
+    @GetMapping(value = "/me/cards")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<PaymentCardDtoResponseWithUser>> readPaymentCardsByUserId(@AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("userId");
+
+        List<PaymentCardDtoResponseWithUser> tagDtoResponseList = paymentCardService.findAllByUserId(userId);
+        return ResponseEntity.ok(tagDtoResponseList);
     }
 }
