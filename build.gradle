@@ -20,6 +20,7 @@ dependencies {
     implementation libs.springboot.starter.liquibase
     implementation libs.springboot.starter.validation
     implementation libs.springboot.starter.web
+    implementation libs.springboot.starter.oauth2.resource.server
     implementation libs.springboot.starter.cache
     implementation libs.springboot.starter.data.redis
     implementation libs.mapstruct

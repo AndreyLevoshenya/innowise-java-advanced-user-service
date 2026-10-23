@@ -13,6 +13,7 @@ springboot-starter-jpa = { module = "org.springframework.boot:spring-boot-starte
 springboot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "springboot"}
 springboot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springboot"}
 springboot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "springboot"}
+springboot-starter-oauth2-resource-server = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server", version.ref = "springboot"}
 springboot-starter-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase", version.ref = "springboot"}
 springboot-starter-cache = { module = "org.springframework.boot:spring-boot-starter-cache", version.ref = "springboot"}
 springboot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis", version.ref = "springboot"}
