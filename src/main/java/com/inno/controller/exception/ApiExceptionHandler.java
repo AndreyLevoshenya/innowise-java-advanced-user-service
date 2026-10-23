@@ -1,5 +1,6 @@
 package com.inno.controller.exception;
 
+import com.inno.service.exception.AuthException;
 import com.inno.service.exception.NotFoundException;
 import com.inno.service.exception.TooManyPaymentCardsException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -13,6 +14,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import static com.inno.service.exception.ExceptionErrorCodes.AUTHENTICATION_FAILED;
 import static com.inno.service.exception.ExceptionErrorCodes.DATA_INTEGRITY_EXCEPTION;
 import static com.inno.service.exception.ExceptionErrorCodes.METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION;
 import static com.inno.service.exception.ExceptionErrorCodes.RESOURCE_NOT_FOUND;
@@ -76,6 +78,18 @@ public class ApiExceptionHandler {
         ApiException apiException = new ApiException(
                 DATA_INTEGRITY_EXCEPTION.getErrorCode(),
                 DATA_INTEGRITY_EXCEPTION.getErrorMessage().formatted(e.getMessage()),
+                status,
+                LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
+        );
+        return new ResponseEntity<>(apiException, status);
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<Object> handleValidationException(AuthException e) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        ApiException apiException = new ApiException(
+                AUTHENTICATION_FAILED.getErrorCode(),
+                e.getLocalizedMessage(),
                 status,
                 LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
         );

@@ -7,7 +7,8 @@ public enum ExceptionErrorCodes {
     VALIDATION_EXCEPTION("000004", "Validation failed: %s"),
     RESOURCE_NOT_FOUND("000005", "Resource not found"),
     METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION("000006", "Id url path should be a number: %s"),
-    DATA_INTEGRITY_EXCEPTION("000007", "Operation violates a data integrity constraint");
+    DATA_INTEGRITY_EXCEPTION("000007", "Operation violates a data integrity constraint"),
+    AUTHENTICATION_FAILED("000010", "Authentication failed: %s");
 
     private final String errorCode;
     private final String errorMessage;
