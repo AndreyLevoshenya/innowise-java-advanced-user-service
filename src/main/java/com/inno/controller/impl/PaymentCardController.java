@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,13 +22,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.inno.controller.RestConstants.PAYMENT_CARDS_V1_API_PATH;
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping(value = PAYMENT_CARDS_V1_API_PATH)
@@ -39,10 +37,9 @@ public class PaymentCardController implements BaseController<PaymentCardDtoReque
         this.paymentCardService = paymentCardService;
     }
 
-
     @Override
     @GetMapping
-    @ResponseStatus(OK)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Page<PaymentCardDtoResponseWithUser>> findAll(
             @RequestParam(name = "search", required = false) String search,
             @PageableDefault(sort = "number", direction = Sort.Direction.ASC) Pageable pageable) {
@@ -51,36 +48,36 @@ public class PaymentCardController implements BaseController<PaymentCardDtoReque
             searchingRequest = new SearchingRequest(search);
         }
         Page<PaymentCardDtoResponseWithUser> pageDtoResponse = paymentCardService.findAll(searchingRequest, pageable);
-        return new ResponseEntity<>(pageDtoResponse, OK);
+        return ResponseEntity.ok(pageDtoResponse);
     }
 
     @Override
     @GetMapping(value = "/{id}")
-    @ResponseStatus(OK)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PaymentCardDtoResponseWithUser> findById(@PathVariable Long id) {
         PaymentCardDtoResponseWithUser paymentCardDtoResponse = paymentCardService.findById(id);
-        return new ResponseEntity<>(paymentCardDtoResponse, OK);
+        return ResponseEntity.ok(paymentCardDtoResponse);
     }
 
     @Override
     @PostMapping
-    @ResponseStatus(CREATED)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PaymentCardDtoResponseWithUser> create(@Valid @RequestBody PaymentCardDtoRequest createRequest) {
         PaymentCardDtoResponseWithUser paymentCardDtoResponse = paymentCardService.create(createRequest);
-        return new ResponseEntity<>(paymentCardDtoResponse, CREATED);
+        return ResponseEntity.status(CREATED).body(paymentCardDtoResponse);
     }
 
     @Override
     @PutMapping(value = "/{id}")
-    @ResponseStatus(OK)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PaymentCardDtoResponseWithUser> update(@PathVariable Long id, @Valid @RequestBody PaymentCardDtoRequest updateRequest) {
         PaymentCardDtoResponseWithUser paymentCardDtoResponse = paymentCardService.update(id, updateRequest);
-        return new ResponseEntity<>(paymentCardDtoResponse, OK);
+        return ResponseEntity.ok(paymentCardDtoResponse);
     }
 
     @Override
     @DeleteMapping(value = "/{id}")
-    @ResponseStatus(NO_CONTENT)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         paymentCardService.deleteById(id);
         return ResponseEntity.noContent().build();
@@ -88,6 +85,7 @@ public class PaymentCardController implements BaseController<PaymentCardDtoReque
 
     @Override
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> updateActiveStatus(
             @PathVariable Long id,
             @RequestParam boolean active) {
