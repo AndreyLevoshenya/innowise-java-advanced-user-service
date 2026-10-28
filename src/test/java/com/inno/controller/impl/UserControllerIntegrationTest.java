@@ -32,7 +32,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
 
     private static final String BY_ID = USERS_V1_API_PATH + "/{id}";
     private static final String STATUS = USERS_V1_API_PATH + "/{id}/status";
-    private static final String CARDS = USERS_V1_API_PATH + "/{id}/payment-cards";
+    private static final String CARDS = USERS_V1_API_PATH + "/{id}/cards";
     private static final long NOT_EXISTING_ID = 999_999L;
 
     @LocalServerPort

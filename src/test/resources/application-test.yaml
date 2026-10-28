@@ -9,3 +9,9 @@ spring:
 
   cache:
     type: none
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: ${JWT_PUBLIC_KEY_PATH:}
