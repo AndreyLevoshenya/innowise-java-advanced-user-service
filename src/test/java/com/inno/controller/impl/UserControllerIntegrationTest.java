@@ -33,6 +33,8 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
     private static final String BY_ID = USERS_V1_API_PATH + "/{id}";
     private static final String STATUS = USERS_V1_API_PATH + "/{id}/status";
     private static final String CARDS = USERS_V1_API_PATH + "/{id}/cards";
+    private static final String BY_EMAIL = USERS_V1_API_PATH + "/email/{email}";
+    private static final String NOT_EXISTING_EMAIL = "invalid@gmail.com";
     private static final long NOT_EXISTING_ID = 999_999L;
 
     @LocalServerPort
@@ -508,6 +510,39 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
                     .then()
                     .statusCode(200)
                     .body("$", empty());
+        }
+    }
+
+    // ---------- GET /api/v1/users/email/{email} ----------
+
+    @Nested
+    @DisplayName("GET findByEmail")
+    class FindByEmail {
+
+        @Test
+        @DisplayName("returns user by email")
+        void shouldReturnUser() {
+            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+
+            given()
+                    .when()
+                    .get(BY_EMAIL, id)
+                    .then()
+                    .statusCode(200)
+                    .body("id", equalTo((int) id))
+                    .body("name", equalTo("Ivan"))
+                    .body("surname", equalTo("Petrov"))
+                    .body("email", equalTo("ivan@example.com"));
+        }
+
+        @Test
+        @DisplayName("returns 404 when user does not exist")
+        void shouldReturn404() {
+            given()
+                    .when()
+                    .get(BY_EMAIL, NOT_EXISTING_EMAIL)
+                    .then()
+                    .statusCode(404);
         }
     }
 }

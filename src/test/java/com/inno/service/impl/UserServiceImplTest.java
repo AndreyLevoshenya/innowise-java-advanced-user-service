@@ -284,4 +284,32 @@ class UserServiceImplTest {
         verify(userRepository, never())
                 .updateActiveStatus(anyLong(), anyBoolean());
     }
+
+    // findByEmail
+
+    @Test
+    void findByEmailShouldReturnUserWhenFound() {
+        when(userRepository.findByEmail("ivan@example.com")).thenReturn(Optional.of(user));
+        when(userDtoMapper.modelToDto(user)).thenReturn(response);
+
+        UserDtoResponse result = userService.findByEmail("ivan@example.com");
+
+        assertSame(response, result);
+
+        verify(userRepository).findByEmail("ivan@example.com");
+        verify(userDtoMapper).modelToDto(user);
+    }
+
+    @Test
+    void findByEmailShouldThrowWhenUserDoesNotExist() {
+        when(userRepository.findByEmail("invalid@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(
+                NotFoundException.class,
+                () -> userService.findByEmail("invalid@example.com")
+        );
+
+        verify(userRepository).findByEmail("invalid@example.com");
+        verifyNoInteractions(userDtoMapper);
+    }
 }
