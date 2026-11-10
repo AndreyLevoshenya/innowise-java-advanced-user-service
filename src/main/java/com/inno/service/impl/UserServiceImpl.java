@@ -119,4 +119,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.updateActiveStatus(id, active);
     }
 
+    @Override
+    public UserDtoResponse findByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format(USER_DOES_NOT_EXIST.getErrorMessage(), email)
+                ));
+
+        return userDtoMapper.modelToDto(user);
+    }
+
 }

@@ -113,6 +113,13 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/email/{email}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SERVICE')")
+    public ResponseEntity<UserDtoResponse> findByEmail(@PathVariable String email) {
+        UserDtoResponse userDtoResponse = userService.findByEmail(email);
+        return ResponseEntity.ok(userDtoResponse);
+    }
+
     @GetMapping(value = "/{id}/cards")
     @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.token.claims['userId']")
     public ResponseEntity<List<PaymentCardDtoResponseWithUser>> readPaymentCardsByUserId(@PathVariable Long id) {
