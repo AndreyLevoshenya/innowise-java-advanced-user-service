@@ -526,7 +526,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
 
             given()
                     .when()
-                    .get(BY_EMAIL, id)
+                    .get(BY_EMAIL, "ivan@example.com")
                     .then()
                     .statusCode(200)
                     .body("id", equalTo((int) id))
