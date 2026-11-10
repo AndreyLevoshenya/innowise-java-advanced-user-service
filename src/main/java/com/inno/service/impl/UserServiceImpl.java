@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.inno.service.exception.ExceptionErrorCodes.USER_BY_EMAIL_DOES_NOT_EXIST;
 import static com.inno.service.exception.ExceptionErrorCodes.USER_DOES_NOT_EXIST;
 
 @Service
@@ -123,7 +124,7 @@ public class UserServiceImpl implements UserService {
     public UserDtoResponse findByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format(USER_DOES_NOT_EXIST.getErrorMessage(), email)
+                        String.format(USER_BY_EMAIL_DOES_NOT_EXIST.getErrorMessage(), email)
                 ));
 
         return userDtoMapper.modelToDto(user);
