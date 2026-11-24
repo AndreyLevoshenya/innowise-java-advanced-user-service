@@ -8,7 +8,8 @@ public enum ExceptionErrorCodes {
     RESOURCE_NOT_FOUND("000005", "Resource not found"),
     METHOD_ARGUMENT_TYPE_MISMATCH_EXCEPTION("000006", "Id url path should be a number: %s"),
     DATA_INTEGRITY_EXCEPTION("000007", "Operation violates a data integrity constraint"),
-    AUTHENTICATION_FAILED("000010", "Authentication failed: %s");
+    AUTHENTICATION_FAILED("000010", "Authentication failed: %s"),
+    USER_BY_EMAIL_DOES_NOT_EXIST("000001", "User with email %s does not exist");
 
     private final String errorCode;
     private final String errorMessage;

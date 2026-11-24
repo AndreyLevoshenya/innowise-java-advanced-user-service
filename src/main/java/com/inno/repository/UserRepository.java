@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
     @Modifying
@@ -19,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             @Param("id") Long id,
             @Param("active") boolean active
     );
+
+    Optional<User> findByEmail(String email);
 }

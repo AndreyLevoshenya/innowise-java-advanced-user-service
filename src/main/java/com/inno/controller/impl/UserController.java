@@ -113,11 +113,18 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/email/{email}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SERVICE')")
+    public ResponseEntity<UserDtoResponse> findByEmail(@PathVariable String email) {
+        UserDtoResponse userDtoResponse = userService.findByEmail(email);
+        return ResponseEntity.ok(userDtoResponse);
+    }
+
     @GetMapping(value = "/{id}/cards")
     @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.token.claims['userId']")
     public ResponseEntity<List<PaymentCardDtoResponseWithUser>> readPaymentCardsByUserId(@PathVariable Long id) {
-        List<PaymentCardDtoResponseWithUser> tagDtoResponseList = paymentCardService.findAllByUserId(id);
-        return ResponseEntity.ok(tagDtoResponseList);
+        List<PaymentCardDtoResponseWithUser> paymentCardsDtoResponseList = paymentCardService.findAllByUserId(id);
+        return ResponseEntity.ok(paymentCardsDtoResponseList);
     }
 
     @GetMapping(value = "/me/cards")
@@ -125,7 +132,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
     public ResponseEntity<List<PaymentCardDtoResponseWithUser>> readPaymentCardsByUserId(@AuthenticationPrincipal Jwt jwt) {
         Long userId = jwt.getClaim("userId");
 
-        List<PaymentCardDtoResponseWithUser> tagDtoResponseList = paymentCardService.findAllByUserId(userId);
-        return ResponseEntity.ok(tagDtoResponseList);
+        List<PaymentCardDtoResponseWithUser> paymentCardsDtoResponseList = paymentCardService.findAllByUserId(userId);
+        return ResponseEntity.ok(paymentCardsDtoResponseList);
     }
 }
