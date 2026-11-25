@@ -22,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
+    private static final UUID USER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
     @Mock
     private UserRepository userRepository;
@@ -147,27 +148,27 @@ class UserServiceImplTest {
 
     @Test
     void findByIdShouldReturnUserWhenFound() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
         when(userDtoMapper.modelToDto(user)).thenReturn(response);
 
-        UserDtoResponse result = userService.findById(1L);
+        UserDtoResponse result = userService.findById(USER_ID);
 
         assertSame(response, result);
 
-        verify(userRepository).findById(1L);
+        verify(userRepository).findById(USER_ID);
         verify(userDtoMapper).modelToDto(user);
     }
 
     @Test
     void findByIdShouldThrowWhenUserDoesNotExist() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
 
         assertThrows(
                 NotFoundException.class,
-                () -> userService.findById(1L)
+                () -> userService.findById(USER_ID)
         );
 
-        verify(userRepository).findById(1L);
+        verify(userRepository).findById(USER_ID);
         verifyNoInteractions(userDtoMapper);
     }
 
@@ -199,11 +200,11 @@ class UserServiceImplTest {
         updateRequest.setEmail("petr@example.com");
         updateRequest.setActive(false);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
         when(userDtoMapper.modelToDto(user)).thenReturn(response);
 
-        UserDtoResponse result = userService.update(1L, updateRequest);
+        UserDtoResponse result = userService.update(USER_ID, updateRequest);
 
         assertSame(response, result);
         assertEquals("Petr", user.getName());
@@ -215,18 +216,18 @@ class UserServiceImplTest {
         assertEquals("petr@example.com", user.getEmail());
         assertFalse(user.isActive());
 
-        verify(userRepository).findById(1L);
+        verify(userRepository).findById(USER_ID);
         verify(userRepository).save(user);
         verify(userDtoMapper).modelToDto(user);
     }
 
     @Test
     void updateShouldThrowWhenUserDoesNotExist() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
 
         assertThrows(
                 NotFoundException.class,
-                () -> userService.update(1L, request)
+                () -> userService.update(USER_ID, request)
         );
 
         verify(userRepository, never()).save(any(User.class));
@@ -237,52 +238,52 @@ class UserServiceImplTest {
 
     @Test
     void deleteByIdShouldDeleteExistingUser() {
-        when(userRepository.existsById(1L)).thenReturn(true);
+        when(userRepository.existsById(USER_ID)).thenReturn(true);
 
-        userService.deleteById(1L);
+        userService.deleteById(USER_ID);
 
-        verify(userRepository).existsById(1L);
-        verify(userRepository).deleteById(1L);
+        verify(userRepository).existsById(USER_ID);
+        verify(userRepository).deleteById(USER_ID);
     }
 
     @Test
     void deleteByIdShouldThrowWhenUserDoesNotExist() {
-        when(userRepository.existsById(1L)).thenReturn(false);
+        when(userRepository.existsById(USER_ID)).thenReturn(false);
 
         assertThrows(
                 NotFoundException.class,
-                () -> userService.deleteById(1L)
+                () -> userService.deleteById(USER_ID)
         );
 
-        verify(userRepository, never()).deleteById(anyLong());
+        verify(userRepository, never()).deleteById(any());
     }
 
     // updateActiveStatus
 
     @Test
     void updateActiveStatusShouldUpdateAndReturnAffectedRows() {
-        when(userRepository.existsById(1L)).thenReturn(true);
-        when(userRepository.updateActiveStatus(1L, false)).thenReturn(1);
+        when(userRepository.existsById(USER_ID)).thenReturn(true);
+        when(userRepository.updateActiveStatus(USER_ID, false)).thenReturn(1);
 
-        int result = userService.updateActiveStatus(1L, false);
+        int result = userService.updateActiveStatus(USER_ID, false);
 
         assertEquals(1, result);
 
-        verify(userRepository).existsById(1L);
-        verify(userRepository).updateActiveStatus(1L, false);
+        verify(userRepository).existsById(USER_ID);
+        verify(userRepository).updateActiveStatus(USER_ID, false);
     }
 
     @Test
     void updateActiveStatusShouldThrowWhenUserDoesNotExist() {
-        when(userRepository.existsById(1L)).thenReturn(false);
+        when(userRepository.existsById(USER_ID)).thenReturn(false);
 
         assertThrows(
                 NotFoundException.class,
-                () -> userService.updateActiveStatus(1L, false)
+                () -> userService.updateActiveStatus(USER_ID, false)
         );
 
         verify(userRepository, never())
-                .updateActiveStatus(anyLong(), anyBoolean());
+                .updateActiveStatus(any(), anyBoolean());
     }
 
     // findByEmail

@@ -25,6 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentCardServiceImplTest {
+    private static final UUID ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
 
     @Mock
     private PaymentCardRepository paymentCardRepository;
@@ -76,7 +78,7 @@ class PaymentCardServiceImplTest {
         user.getPaymentCards().add(paymentCard);
 
         request = new PaymentCardDtoRequest();
-        request.setUserId(1L);
+        request.setUserId(ID);
         request.setNumber("1234567890123456");
         request.setHolder("IVAN IVANOV");
         request.setExpirationDate(LocalDate.of(2030, 10, 1));
@@ -190,7 +192,7 @@ class PaymentCardServiceImplTest {
 
     @Test
     void createShouldSaveCardAndReturnResponse() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(ID)).thenReturn(Optional.of(user));
 
         when(paymentCardDtoMapper.dtoToModel(request, userRepository))
                 .thenReturn(paymentCard);
@@ -206,7 +208,7 @@ class PaymentCardServiceImplTest {
 
         assertSame(response, result);
 
-        verify(userRepository).findById(1L);
+        verify(userRepository).findById(ID);
         verify(paymentCardDtoMapper).dtoToModel(request, userRepository);
         verify(paymentCardRepository).save(paymentCard);
         verify(paymentCardDtoMapper).modelToDtoWithUser(paymentCard);
@@ -214,7 +216,7 @@ class PaymentCardServiceImplTest {
 
     @Test
     void createShouldThrowWhenUserDoesNotExist() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository.findById(ID)).thenReturn(Optional.empty());
 
         assertThrows(
                 NotFoundException.class,
@@ -234,7 +236,7 @@ class PaymentCardServiceImplTest {
             user.getPaymentCards().add(new PaymentCard());
         }
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(ID)).thenReturn(Optional.of(user));
         when(paymentCardDtoMapper.dtoToModel(request, userRepository)).thenReturn(paymentCard);
         when(paymentCardRepository.save(paymentCard)).thenReturn(paymentCard);
         when(paymentCardDtoMapper.modelToDtoWithUser(paymentCard)).thenReturn(response);
@@ -261,7 +263,7 @@ class PaymentCardServiceImplTest {
             user.getPaymentCards().add(card);
         }
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(ID)).thenReturn(Optional.of(user));
 
         assertThrows(
                 TooManyPaymentCardsException.class,
@@ -284,7 +286,7 @@ class PaymentCardServiceImplTest {
         when(paymentCardRepository.findById(10L))
                 .thenReturn(Optional.of(paymentCard));
 
-        when(userRepository.findById(1L))
+        when(userRepository.findById(ID))
                 .thenReturn(Optional.of(user));
 
         when(paymentCardRepository.save(paymentCard))
@@ -304,7 +306,7 @@ class PaymentCardServiceImplTest {
         assertFalse(paymentCard.isActive());
 
         verify(paymentCardRepository).findById(10L);
-        verify(userRepository).findById(1L);
+        verify(userRepository).findById(ID);
         verify(paymentCardRepository).save(paymentCard);
         verify(paymentCardDtoMapper).modelToDtoWithUser(paymentCard);
     }
@@ -329,7 +331,7 @@ class PaymentCardServiceImplTest {
         when(paymentCardRepository.findById(10L))
                 .thenReturn(Optional.of(paymentCard));
 
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository.findById(ID)).thenReturn(Optional.empty());
 
         assertThrows(
                 NotFoundException.class,
@@ -399,50 +401,50 @@ class PaymentCardServiceImplTest {
 
     @Test
     void findAllByUserIdShouldReturnCardsForExistingUser() {
-        when(userRepository.existsById(1L)).thenReturn(true);
+        when(userRepository.existsById(ID)).thenReturn(true);
 
-        when(paymentCardRepository.findAllByUserId(1L))
+        when(paymentCardRepository.findAllByUserId(ID))
                 .thenReturn(List.of(paymentCard));
 
         when(paymentCardDtoMapper.modelToDtoWithUser(paymentCard))
                 .thenReturn(response);
 
         List<PaymentCardDtoResponseWithUser> result =
-                paymentCardService.findAllByUserId(1L);
+                paymentCardService.findAllByUserId(ID);
 
         assertEquals(1, result.size());
         assertSame(response, result.get(0));
 
-        verify(userRepository).existsById(1L);
-        verify(paymentCardRepository).findAllByUserId(1L);
+        verify(userRepository).existsById(ID);
+        verify(paymentCardRepository).findAllByUserId(ID);
         verify(paymentCardDtoMapper).modelToDtoWithUser(paymentCard);
     }
 
     @Test
     void findAllByUserIdShouldReturnEmptyListWhenUserHasNoCards() {
-        when(userRepository.existsById(1L)).thenReturn(true);
-        when(paymentCardRepository.findAllByUserId(1L))
+        when(userRepository.existsById(ID)).thenReturn(true);
+        when(paymentCardRepository.findAllByUserId(ID))
                 .thenReturn(List.of());
 
         List<PaymentCardDtoResponseWithUser> result =
-                paymentCardService.findAllByUserId(1L);
+                paymentCardService.findAllByUserId(ID);
 
         assertTrue(result.isEmpty());
 
-        verify(paymentCardRepository).findAllByUserId(1L);
+        verify(paymentCardRepository).findAllByUserId(ID);
         verifyNoInteractions(paymentCardDtoMapper);
     }
 
     @Test
     void findAllByUserIdShouldThrowWhenUserDoesNotExist() {
-        when(userRepository.existsById(1L)).thenReturn(false);
+        when(userRepository.existsById(ID)).thenReturn(false);
 
         assertThrows(
                 NotFoundException.class,
-                () -> paymentCardService.findAllByUserId(1L)
+                () -> paymentCardService.findAllByUserId(ID)
         );
 
-        verify(paymentCardRepository, never()).findAllByUserId(anyLong());
+        verify(paymentCardRepository, never()).findAllByUserId(any());
         verifyNoInteractions(paymentCardDtoMapper);
     }
 }

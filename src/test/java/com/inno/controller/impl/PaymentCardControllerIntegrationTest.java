@@ -15,6 +15,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.inno.controller.RestConstants.PAYMENT_CARDS_V1_API_PATH;
 import static com.inno.controller.RestConstants.USERS_V1_API_PATH;
@@ -26,7 +27,7 @@ class PaymentCardControllerIntegrationTest extends AbstractIntegrationTest {
 
     private static final String BY_ID = PAYMENT_CARDS_V1_API_PATH + "/{id}";
     private static final String STATUS = PAYMENT_CARDS_V1_API_PATH + "/{id}/status";
-    private static final long NOT_EXISTING_ID = 999_999L;
+    private static final UUID NOT_EXISTING_ID = UUID.fromString("1111a1111-a11a-11a1-a111-111111111111");
 
     private static final String NUMBER_1 = "4111111111111111";
     private static final String NUMBER_2 = "5555555555554444";
@@ -41,7 +42,7 @@ class PaymentCardControllerIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private PaymentCardRepository paymentCardRepository;
 
-    private long userId;
+    private UUID userId;
 
     @BeforeEach
     void setUp() {
@@ -53,7 +54,7 @@ class PaymentCardControllerIntegrationTest extends AbstractIntegrationTest {
 
     // ---------- helpers ----------
 
-    private long createUserViaApi(String name, String surname, String email) {
+    private UUID createUserViaApi(String name, String surname, String email) {
         Map<String, Object> body = new HashMap<>();
         body.put("name", name);
         body.put("surname", surname);
@@ -61,10 +62,10 @@ class PaymentCardControllerIntegrationTest extends AbstractIntegrationTest {
         body.put("email", email);
         body.put("active", true);
 
-        return given().contentType(ContentType.JSON).body(body).when().post(USERS_V1_API_PATH).then().log().ifValidationFails().statusCode(201).extract().jsonPath().getLong("id");
+        return given().contentType(ContentType.JSON).body(body).when().post(USERS_V1_API_PATH).then().log().ifValidationFails().statusCode(201).extract().jsonPath().getUUID("id");
     }
 
-    private Map<String, Object> cardBody(long ownerId, String number, String holder) {
+    private Map<String, Object> cardBody(UUID ownerId, String number, String holder) {
         Map<String, Object> body = new HashMap<>();
         body.put("userId", ownerId);
         body.put("number", number);
@@ -74,7 +75,7 @@ class PaymentCardControllerIntegrationTest extends AbstractIntegrationTest {
         return body;
     }
 
-    private long createCardViaApi(long ownerId, String number, String holder) {
+    private long createCardViaApi(UUID ownerId, String number, String holder) {
         return given().contentType(ContentType.JSON).body(cardBody(ownerId, number, holder)).when().post(PAYMENT_CARDS_V1_API_PATH).then().log().ifValidationFails().statusCode(201).extract().jsonPath().getLong("id");
     }
 
@@ -89,7 +90,7 @@ class PaymentCardControllerIntegrationTest extends AbstractIntegrationTest {
         void shouldCreateCard() {
             LocalDate expiration = LocalDate.now().plusYears(3);
 
-            long id = given().contentType(ContentType.JSON).body(cardBody(userId, NUMBER_1, "IVAN PETROV")).when().post(PAYMENT_CARDS_V1_API_PATH).then().log().ifValidationFails().statusCode(201).body("id", notNullValue()).body("number", equalTo(NUMBER_1)).body("holder", equalTo("IVAN PETROV")).body("expirationDate", equalTo(expiration.toString())).body("active", equalTo(true)).body("user.id", equalTo((int) userId)).extract().jsonPath().getLong("id");
+            long id = given().contentType(ContentType.JSON).body(cardBody(userId, NUMBER_1, "IVAN PETROV")).when().post(PAYMENT_CARDS_V1_API_PATH).then().log().ifValidationFails().statusCode(201).body("id", notNullValue()).body("number", equalTo(NUMBER_1)).body("holder", equalTo("IVAN PETROV")).body("expirationDate", equalTo(expiration.toString())).body("active", equalTo(true)).body("user.id", equalTo(userId)).extract().jsonPath().getLong("id");
 
             PaymentCard saved = paymentCardRepository.findById(id).orElseThrow();
             assertEquals(NUMBER_1, saved.getNumber());
@@ -173,7 +174,7 @@ class PaymentCardControllerIntegrationTest extends AbstractIntegrationTest {
         void shouldReturnCard() {
             long id = createCardViaApi(userId, NUMBER_1, "IVAN PETROV");
 
-            given().when().get(BY_ID, id).then().statusCode(200).body("id", equalTo((int) id)).body("number", equalTo(NUMBER_1)).body("holder", equalTo("IVAN PETROV")).body("user.id", equalTo((int) userId));
+            given().when().get(BY_ID, id).then().statusCode(200).body("id", equalTo((int) id)).body("number", equalTo(NUMBER_1)).body("holder", equalTo("IVAN PETROV")).body("user.id", equalTo(userId));
         }
 
         @Test

@@ -16,6 +16,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.inno.controller.RestConstants.USERS_V1_API_PATH;
 import static io.restassured.RestAssured.given;
@@ -35,7 +36,8 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
     private static final String CARDS = USERS_V1_API_PATH + "/{id}/cards";
     private static final String BY_EMAIL = USERS_V1_API_PATH + "/email/{email}";
     private static final String NOT_EXISTING_EMAIL = "invalid@gmail.com";
-    private static final long NOT_EXISTING_ID = 999_999L;
+    private static final UUID NOT_EXISTING_ID = UUID.fromString("1111a1111-a11a-11a1-a111-111111111111");
+
 
     @LocalServerPort
     private int port;
@@ -65,7 +67,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         return body;
     }
 
-    private long createUserViaApi(String name, String surname, String email) {
+    private UUID createUserViaApi(String name, String surname, String email) {
         return given()
                 .contentType(ContentType.JSON)
                 .body(userBody(name, surname, email))
@@ -75,10 +77,10 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
                 .statusCode(201)
                 .extract()
                 .jsonPath()
-                .getLong("id");
+                .getUUID("id");
     }
 
-    private PaymentCard createCardInDb(long userId, String number, String holder) {
+    private PaymentCard createCardInDb(UUID userId, String number, String holder) {
         User user = userRepository.findById(userId).orElseThrow();
         PaymentCard card = new PaymentCard();
         card.setUser(user);
@@ -98,7 +100,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("creates user and persists it to DB")
         void shouldCreateUser() {
-            long id = given()
+            UUID id = given()
                     .contentType(ContentType.JSON)
                     .body(userBody("Ivan", "Petrov", "ivan.petrov@example.com"))
                     .when()
@@ -112,7 +114,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
                     .body("birthDate", equalTo("1998-05-20"))
                     .extract()
                     .jsonPath()
-                    .getLong("id");
+                    .getUUID("id");
 
             User saved = userRepository.findById(id).orElseThrow();
             assertEquals("Ivan", saved.getName());
@@ -171,14 +173,14 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("returns user by id")
         void shouldReturnUser() {
-            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
 
             given()
                     .when()
                     .get(BY_ID, id)
                     .then()
                     .statusCode(200)
-                    .body("id", equalTo((int) id))
+                    .body("id", equalTo(id))
                     .body("name", equalTo("Ivan"))
                     .body("surname", equalTo("Petrov"))
                     .body("email", equalTo("ivan@example.com"));
@@ -305,7 +307,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("updates user and persists changes to DB")
         void shouldUpdateUser() {
-            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
 
             Map<String, Object> updated = userBody("Petr", "Ivanov", "petr.ivanov@example.com");
             updated.put("birthDate", "2000-01-15");
@@ -317,7 +319,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
                     .put(BY_ID, id)
                     .then()
                     .statusCode(200)
-                    .body("id", equalTo((int) id))
+                    .body("id", equalTo(id))
                     .body("name", equalTo("Petr"))
                     .body("surname", equalTo("Ivanov"))
                     .body("email", equalTo("petr.ivanov@example.com"))
@@ -345,7 +347,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("returns 400 on invalid body and leaves DB unchanged")
         void shouldReturn400OnInvalidBody() {
-            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
 
             given()
                     .contentType(ContentType.JSON)
@@ -370,7 +372,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("deletes user from DB")
         void shouldDeleteUser() {
-            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
 
             given()
                     .when()
@@ -384,7 +386,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("cascades deletion to payment cards")
         void shouldCascadeDeleteCards() {
-            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
             createCardInDb(id, "4111111111111111", "IVAN PETROV");
             createCardInDb(id, "5555555555554444", "IVAN PETROV");
             assertEquals(2, paymentCardRepository.count());
@@ -419,7 +421,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("deactivates and activates user")
         void shouldToggleActiveStatus() {
-            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
 
             given()
                     .queryParam("active", false)
@@ -452,7 +454,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("returns 400 when 'active' param is missing")
         void shouldReturn400WhenParamMissing() {
-            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
 
             given()
                     .when()
@@ -464,7 +466,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("returns 400 when 'active' param is not boolean")
         void shouldReturn400WhenParamInvalid() {
-            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
 
             given()
                     .queryParam("active", "maybe")
@@ -484,8 +486,8 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("returns only cards of the requested user")
         void shouldReturnCardsOfUser() {
-            long ivanId = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
-            long annaId = createUserViaApi("Anna", "Sidorova", "anna@example.com");
+            UUID ivanId = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID annaId = createUserViaApi("Anna", "Sidorova", "anna@example.com");
             createCardInDb(ivanId, "4111111111111111", "IVAN PETROV");
             createCardInDb(ivanId, "5555555555554444", "IVAN PETROV");
             createCardInDb(annaId, "378282246310005", "ANNA SIDOROVA");
@@ -502,7 +504,7 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("returns empty list when user has no cards")
         void shouldReturnEmptyList() {
-            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
 
             given()
                     .when()
@@ -522,14 +524,14 @@ class UserControllerIntegrationTest extends AbstractIntegrationTest {
         @Test
         @DisplayName("returns user by email")
         void shouldReturnUser() {
-            long id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
+            UUID id = createUserViaApi("Ivan", "Petrov", "ivan@example.com");
 
             given()
                     .when()
                     .get(BY_EMAIL, "ivan@example.com")
                     .then()
                     .statusCode(200)
-                    .body("id", equalTo((int) id))
+                    .body("id", equalTo(id))
                     .body("name", equalTo("Ivan"))
                     .body("surname", equalTo("Petrov"))
                     .body("email", equalTo("ivan@example.com"));
