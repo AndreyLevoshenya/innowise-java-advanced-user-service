@@ -12,7 +12,6 @@ public interface UserDtoMapper {
     UserDtoResponse modelToDto(User model);
 
     @Mappings({
-            @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "updatedAt", ignore = true),
             @Mapping(target = "paymentCards", ignore = true)

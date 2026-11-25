@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface PaymentCardRepository extends JpaRepository<PaymentCard, Long>, JpaSpecificationExecutor<PaymentCard> {
 
@@ -18,7 +19,7 @@ public interface PaymentCardRepository extends JpaRepository<PaymentCard, Long>,
         FROM PaymentCard c
         WHERE c.user.id = :userId
         """)
-    List<PaymentCard> findAllByUserId(Long userId);
+    List<PaymentCard> findAllByUserId(UUID userId);
 
     @Modifying
     @Query("""

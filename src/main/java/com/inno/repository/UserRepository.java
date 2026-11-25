@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificationExecutor<User> {
 
     @Modifying
     @Query(value = """
@@ -18,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
         WHERE id = :id
         """, nativeQuery = true)
     int updateActiveStatus(
-            @Param("id") Long id,
+            @Param("id") UUID id,
             @Param("active") boolean active
     );
 

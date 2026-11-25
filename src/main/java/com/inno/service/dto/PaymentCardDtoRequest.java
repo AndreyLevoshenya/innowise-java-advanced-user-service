@@ -7,11 +7,12 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class PaymentCardDtoRequest {
     @NotNull(message = "User ID is required")
     @Positive(message = "User ID must be positive")
-    private Long userId;
+    private UUID userId;
     @NotBlank(message = "Number must not be blank")
     @Size(max = 100, message = "Number must not exceed 100 characters")
     private String number;
@@ -24,7 +25,7 @@ public class PaymentCardDtoRequest {
     @NotNull(message = "Active status is required")
     private Boolean active;
 
-    public PaymentCardDtoRequest(Long userId, String number, String holder, LocalDate expirationDate, Boolean active) {
+    public PaymentCardDtoRequest(UUID userId, String number, String holder, LocalDate expirationDate, Boolean active) {
         this.userId = userId;
         this.number = number;
         this.holder = holder;
@@ -35,11 +36,11 @@ public class PaymentCardDtoRequest {
     public PaymentCardDtoRequest() {
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 

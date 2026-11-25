@@ -10,7 +10,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT
+                  type: UUID
                   autoIncrement: true
                   constraints:
                     primaryKey: true
@@ -85,7 +85,7 @@ databaseChangeLog:
 
               - column:
                   name: user_id
-                  type: BIGINT
+                  type: UUID
                   constraints:
                     nullable: false
 

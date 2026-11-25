@@ -7,8 +7,10 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class UserDtoRequest {
+    private UUID id;
     @NotBlank(message = "Name must not be blank")
     @Size(max = 100, message = "Name must not exceed 100 characters")
     private String name;
@@ -25,7 +27,8 @@ public class UserDtoRequest {
     @NotNull(message = "Active status is required")
     private Boolean active;
 
-    public UserDtoRequest(String name, String surname, LocalDate birthDate, String email, Boolean active) {
+    public UserDtoRequest(UUID id, String name, String surname, LocalDate birthDate, String email, Boolean active) {
+        this.id = id;
         this.name = name;
         this.surname = surname;
         this.birthDate = birthDate;
@@ -74,5 +77,13 @@ public class UserDtoRequest {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

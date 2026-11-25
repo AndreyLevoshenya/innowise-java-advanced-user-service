@@ -16,5 +16,5 @@ public interface BaseController<T, R, K> {
 
     ResponseEntity<Void> deleteById(K id);
 
-    ResponseEntity<Void> updateActiveStatus(Long id, boolean active);
+    ResponseEntity<Void> updateActiveStatus(K id, boolean active);
 }

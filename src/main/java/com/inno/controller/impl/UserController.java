@@ -29,13 +29,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.inno.controller.RestConstants.USERS_V1_API_PATH;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping(value = USERS_V1_API_PATH)
-public class UserController implements BaseController<UserDtoRequest, UserDtoResponse, Long> {
+public class UserController implements BaseController<UserDtoRequest, UserDtoResponse, UUID> {
     private final UserService userService;
     private final PaymentCardService paymentCardService;
 
@@ -64,7 +65,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
     public ResponseEntity<UserDtoResponse> getCurrentUser(
             @AuthenticationPrincipal Jwt jwt
     ) {
-        Long userId = jwt.getClaim("userId");
+        UUID userId = jwt.getClaim("userId");
 
         UserDtoResponse userDtoResponse = userService.findById(userId);
         return ResponseEntity.ok(userDtoResponse);
@@ -73,7 +74,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
     @Override
     @GetMapping(value = "/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.token.claims['userId']")
-    public ResponseEntity<UserDtoResponse> findById(@PathVariable Long id) {
+    public ResponseEntity<UserDtoResponse> findById(@PathVariable UUID id) {
         UserDtoResponse userDtoResponse = userService.findById(id);
         return ResponseEntity.ok(userDtoResponse);
     }
@@ -89,7 +90,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
     @Override
     @PutMapping(value = "/{id}")
     @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.token.claims['userId']")
-    public ResponseEntity<UserDtoResponse> update(@PathVariable Long id, @Valid @RequestBody UserDtoRequest updateRequest) {
+    public ResponseEntity<UserDtoResponse> update(@PathVariable UUID id, @Valid @RequestBody UserDtoRequest updateRequest) {
         UserDtoResponse userDtoResponse = userService.update(id, updateRequest);
         return ResponseEntity.ok(userDtoResponse);
     }
@@ -97,7 +98,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
     @Override
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
         userService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -106,7 +107,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> updateActiveStatus(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestParam boolean active) {
 
         userService.updateActiveStatus(id, active);
@@ -122,7 +123,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
 
     @GetMapping(value = "/{id}/cards")
     @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.token.claims['userId']")
-    public ResponseEntity<List<PaymentCardDtoResponseWithUser>> readPaymentCardsByUserId(@PathVariable Long id) {
+    public ResponseEntity<List<PaymentCardDtoResponseWithUser>> readPaymentCardsByUserId(@PathVariable UUID id) {
         List<PaymentCardDtoResponseWithUser> paymentCardsDtoResponseList = paymentCardService.findAllByUserId(id);
         return ResponseEntity.ok(paymentCardsDtoResponseList);
     }
@@ -130,7 +131,7 @@ public class UserController implements BaseController<UserDtoRequest, UserDtoRes
     @GetMapping(value = "/me/cards")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<PaymentCardDtoResponseWithUser>> readPaymentCardsByUserId(@AuthenticationPrincipal Jwt jwt) {
-        Long userId = jwt.getClaim("userId");
+        UUID userId = jwt.getClaim("userId");
 
         List<PaymentCardDtoResponseWithUser> paymentCardsDtoResponseList = paymentCardService.findAllByUserId(userId);
         return ResponseEntity.ok(paymentCardsDtoResponseList);

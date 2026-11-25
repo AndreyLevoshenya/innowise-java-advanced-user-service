@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.inno.service.exception.ExceptionErrorCodes.PAYMENT_CARD_DOES_NOT_EXIST;
 import static com.inno.service.exception.ExceptionErrorCodes.TOO_MANY_PAYMENT_CARDS_EXCEPTION;
@@ -137,7 +138,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PaymentCardDtoResponseWithUser> findAllByUserId(Long userId) {
+    public List<PaymentCardDtoResponseWithUser> findAllByUserId(UUID userId) {
         LOGGER.info("Reading payment cards by user id {}", userId);
         if (!userRepository.existsById(userId)) {
             LOGGER.error("User with id {} not found. Unable to read payment cards", userId);

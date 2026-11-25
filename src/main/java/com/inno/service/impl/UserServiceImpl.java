@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.inno.service.exception.ExceptionErrorCodes.USER_BY_EMAIL_DOES_NOT_EXIST;
 import static com.inno.service.exception.ExceptionErrorCodes.USER_DOES_NOT_EXIST;
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "users", key = "#id")
-    public UserDtoResponse findById(Long id) {
+    public UserDtoResponse findById(UUID id) {
         LOGGER.info("Reading user by id {}", id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> {
@@ -78,7 +79,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @CacheEvict(value = "users", key = "#id")
-    public UserDtoResponse update(Long id, UserDtoRequest updateRequest) {
+    public UserDtoResponse update(UUID id, UserDtoRequest updateRequest) {
         LOGGER.info("Updating user with id {}", id);
 
         User user = userRepository.findById(id)
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @CacheEvict(value = "users", key = "#id")
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         LOGGER.info("Deleting user by id {}", id);
         if (!userRepository.existsById(id)) {
             LOGGER.warn("User with id {} not found. Unable to delete user", id);
@@ -110,7 +111,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @CacheEvict(value = "users", key = "#id")
-    public int updateActiveStatus(Long id, boolean active) {
+    public int updateActiveStatus(UUID id, boolean active) {
         LOGGER.info("Updating active status for user with id {}", id);
 
         if (!userRepository.existsById(id)) {

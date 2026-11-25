@@ -15,5 +15,5 @@ public interface BaseService<T, R, K> {
 
     void deleteById(K id);
 
-    int updateActiveStatus(Long id, boolean active);
+    int updateActiveStatus(K id, boolean active);
 }

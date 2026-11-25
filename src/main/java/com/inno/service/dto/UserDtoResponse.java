@@ -4,9 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class UserDtoResponse {
-    private Long id;
+    private UUID id;
     private String name;
     private String surname;
     private LocalDate birthDate;
@@ -19,7 +20,7 @@ public class UserDtoResponse {
     public UserDtoResponse() {
     }
 
-    public UserDtoResponse(Long id, String name, String surname, LocalDate birthDate, String email, Boolean active, LocalDateTime createdAt, LocalDateTime updatedAt, List<PaymentCardDtoResponse> paymentCards) {
+    public UserDtoResponse(UUID id, String name, String surname, LocalDate birthDate, String email, Boolean active, LocalDateTime createdAt, LocalDateTime updatedAt, List<PaymentCardDtoResponse> paymentCards) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -31,11 +32,11 @@ public class UserDtoResponse {
         this.paymentCards = paymentCards;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

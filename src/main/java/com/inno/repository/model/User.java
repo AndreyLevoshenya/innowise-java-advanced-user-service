@@ -4,6 +4,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -11,11 +12,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
-public class User extends BaseEntity<Long> {
+public class User extends BaseEntity {
+    @Id
+    @Column(name = "id", nullable = false, updatable = false)
+    private UUID id;
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -41,7 +46,8 @@ public class User extends BaseEntity<Long> {
     public User() {
     }
 
-    public User(String name, String surname, LocalDate birthDate, String email, boolean active, List<PaymentCard> paymentCards) {
+    public User(UUID id, String name, String surname, LocalDate birthDate, String email, boolean active, List<PaymentCard> paymentCards) {
+        this.id = id;
         this.name = name;
         this.surname = surname;
         this.birthDate = birthDate;
@@ -96,5 +102,13 @@ public class User extends BaseEntity<Long> {
 
     public void setPaymentCards(List<PaymentCard> paymentCards) {
         this.paymentCards = paymentCards;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }
